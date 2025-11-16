@@ -90,5 +90,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 For questions or further details, feel free to contact me at:
 
-- Email: [willy.ja@mhs.usk.ac.id](mailto:willy.ja@mhs.usk.ac.id)
+- Email: [willy.ja@mhs.usk.ac.id](mailto:willy.ja@mhs.usk.ac.id) and [ammarqurthuby@gmail.com](mailto:ammarqurthuby@gmail.com)
 - GitHub: [Ammar Qurthuby](https://github.com/marqynew) Or [Willy Jonathan Arsyad](https://github.com/Giant77)
