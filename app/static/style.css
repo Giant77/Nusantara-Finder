@@ -339,7 +339,7 @@ header::before {
 .home-button {
   position: fixed;
   top: 2rem;
-  right: 1rem;
+  left: 1rem;
   z-index: 1000;
   width: 60px;
   height: 60px;
