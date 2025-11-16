@@ -33,7 +33,12 @@
                 Hasil pencarian untuk: <strong>"{{ query }}"</strong>
             </p>
             <p class="brand-subtitle" style="margin-top: 0.5rem; font-size: 0.95rem;">
-                Menggunakan algoritma: <strong>{{ algorithm|capitalize }} Similarity</strong>
+                Menggunakan algoritma: <strong>
+                    {% if algorithm == 'jaccard' %}Jaccard Similarity
+                    {% elif algorithm == 'cosine' %}Cosine Similarity
+                    {% elif algorithm == 'bm25' %}BM25
+                    {% endif %}
+                </strong>
             </p>
         </header>
 
@@ -48,16 +53,15 @@
                        autocomplete="off">
                 
                 <select name="algorithm" aria-label="Pilih algoritma pencarian">
-                    <option value="jaccard" {% if algorithm=='jaccard' %}selected{% endif %}>
+                    <option value="jaccard" {% if algorithm == 'jaccard' %}selected{% endif %}>
                         Jaccard Similarity
                     </option>
-                    <option value="cosine" {% if algorithm=='cosine' %}selected{% endif %}>
+                    <option value="cosine" {% if algorithm == 'cosine' %}selected{% endif %}>
                         Cosine Similarity
                     </option>
-                    <option value="bm25" {% if algorithm=='bm25' %}selected{% endif %}>
-                        BM25 Similarity
+                    <option value="bm25" {% if algorithm == 'bm25' %}selected{% endif %}>
+                        BM25
                     </option>
-                    
                 </select>
                 
                 <button type="submit">
@@ -66,11 +70,11 @@
             </form>
         </section>
 
-     <!-- Results Info -->
+        <!-- Results Info -->
         {% if results %}
-        <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: 16px; margin: 2rem 0; text-align: center;">
-            <p style="color: #1f2937; font-size: 1.1rem; margin: 0;">
-                <i class="fas fa-info-circle" style="color: #2563eb;"></i>
+        <div class="info-box">
+            <p>
+                <i class="fas fa-info-circle"></i>
                 Ditemukan <strong>{{ total_results }}</strong> hasil yang relevan
                 {% if total_pages > 1 %}
                 (Halaman {{ current_page }} dari {{ total_pages }})
@@ -111,7 +115,7 @@
                         
                         <div class="similarity-badge">
                             <i class="fas fa-chart-line"></i>
-                            Similarity: {{ (result['similarity'] * 100)|round(2) }}%
+                            Similarity: {{ "%.2f"|format(result['similarity'] * 100) }}%
                         </div>
                     </div>
                 </article>
@@ -119,39 +123,42 @@
             </div>
             {% else %}
             <!-- No Results Found -->
-            <div style="background: rgba(255, 255, 255, 0.9); padding: 4rem 2rem; border-radius: 20px; text-align: center; margin: 3rem 0;">
-                <i class="fas fa-search" style="font-size: 4rem; color: #9ca3af; margin-bottom: 1rem;"></i>
-                <h2 style="color: #1f2937; margin-bottom: 1rem;">Tidak Ada Hasil Ditemukan</h2>
-                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 2rem;">
-                    Maaf, pencarian untuk "<strong>{{ query }}</strong>" tidak menemukan hasil.
+            <div class="no-results">
+                <i class="fas fa-search"></i>
+                <h2>Tidak Ada Hasil Ditemukan</h2>
+                <p>
+                    Maaf, pencarian untuk "<strong>{{ query }}</strong>" tidak menemukan hasil yang relevan.
                 </p>
-                <a href="/" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;">
+                <p style="margin-top: 1rem; color: var(--text-light);">
+                    Tips: Coba gunakan kata kunci yang berbeda atau algoritma pencarian lain.
+                </p>
+                <a href="/" style="display: inline-block; margin-top: 1.5rem; padding: 1rem 2rem; background: var(--gradient-ocean); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: var(--transition);">
                     <i class="fas fa-home"></i> Kembali ke Beranda
                 </a>
             </div>
             {% endif %}
         </section>
 
-       <!-- Pagination -->
+        <!-- Pagination -->
         {% if results and total_pages > 1 %}
         <section class="pagination-container">
             <div class="pagination">
                 {% if current_page > 1 %}
-                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=current_page - 1) }}" 
+                <a href="?query={{ query|urlencode }}&algorithm={{ algorithm }}&page={{ current_page - 1 }}{% if category %}&category={{ category|urlencode }}{% endif %}" 
                    class="prev">
                     <i class="fas fa-chevron-left"></i> Sebelumnya
                 </a>
                 {% endif %}
 
                 {% for page_num in page_range %}
-                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=page_num) }}"
+                <a href="?query={{ query|urlencode }}&algorithm={{ algorithm }}&page={{ page_num }}{% if category %}&category={{ category|urlencode }}{% endif %}"
                    class="{{ 'active' if page_num == current_page else '' }}">
                     {{ page_num }}
                 </a>
                 {% endfor %}
 
                 {% if current_page < total_pages %}
-                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=current_page + 1) }}" 
+                <a href="?query={{ query|urlencode }}&algorithm={{ algorithm }}&page={{ current_page + 1 }}{% if category %}&category={{ category|urlencode }}{% endif %}" 
                    class="next">
                     Selanjutnya <i class="fas fa-chevron-right"></i>
                 </a>
@@ -164,7 +171,7 @@
     <!-- JavaScript -->
     <script>
         // Background Image Slideshow
-     const images = [
+        const images = [
             'https://img.global.news.samsung.com/id/wp-content/uploads/2023/04/18092118/Adaptive-Pixel-200MP-membuat-hasil-foto-pemandangan-menjadi-epic.jpeg',
             'https://aceh.bpk.go.id/wp-content/uploads/2024/10/Masjid-raya-baiturrahman-banda-aceh-destinasi-wisata-religi-yang-patut-anda-kunjungi.jpg',
             'https://c.pxhere.com/photos/22/55/krka_waterfall_croatia_nature_park_river_travel_water-848921.jpg!d',
@@ -193,23 +200,35 @@
 
         // Search input focus animation
         const searchInput = document.querySelector('input[name="query"]');
-        searchInput.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'scale(1.02)';
-        });
-        
-        searchInput.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'scale(1)';
-        });
+        if (searchInput) {
+            searchInput.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'scale(1.02)';
+            });
+            
+            searchInput.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'scale(1)';
+            });
+        }
 
-        // Smooth scroll to results
+        // Smooth scroll to results on page change
         if (window.location.search.includes('page=')) {
             setTimeout(() => {
-                document.querySelector('.results-container')?.scrollIntoView({ 
-                    behavior: 'smooth', 
-                    block: 'start' 
-                });
+                const resultsContainer = document.querySelector('.results-container');
+                if (resultsContainer) {
+                    resultsContainer.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'start' 
+                    });
+                }
             }, 300);
         }
+
+        // Debug: Log current URL parameters
+        console.log('Current URL:', window.location.href);
+        const urlParams = new URLSearchParams(window.location.search);
+        console.log('Query:', urlParams.get('query'));
+        console.log('Algorithm:', urlParams.get('algorithm'));
+        console.log('Page:', urlParams.get('page'));
     </script>
 </body>
 </html>

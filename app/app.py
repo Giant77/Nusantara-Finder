@@ -1,32 +1,54 @@
 from flask import Flask, render_template, request
-import re
 import csv
-import math
 import os
-from collections import Counter, defaultdict
-from rank_bm25 import BM25Okapi
+from collections import defaultdict
+import re
+
+# Import modul similarity calculator
+from similarity_calculator import SimilarityCalculator
 
 app = Flask(__name__)
 
 # Tentukan path file berdasarkan lokasi app.py
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))  # Lokasi folder app/
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 INDEX_PATH = os.path.join(BASE_DIR, '..', 'inverted_index.txt')
 COMBINED_DATA_PATH = os.path.join(BASE_DIR, '..', 'merged_combined_data.csv')
 
-# Fungsi untuk memuat inverted index dari file
+
 def load_inverted_index(file_path):
+    """
+    Memuat inverted index dari file
+    Format: word: (doc_id, freq), (doc_id, freq), ...
+    
+    Returns:
+        dict: {doc_id: {word: frequency}}
+    """
     inverted_index = defaultdict(lambda: defaultdict(int))
+    
     with open(file_path, 'r', encoding='utf-8') as file:
         for line in file:
-            word, postings = line.strip().split(': ')
+            parts = line.strip().split(': ')
+            if len(parts) != 2:
+                continue
+            
+            word, postings = parts
             doc_list = re.findall(r'\((\d+), (\d+)\)', postings)
+            
             for doc_id, freq in doc_list:
                 inverted_index[int(doc_id)][word] = int(freq)
-    return inverted_index
+    
+    return dict(inverted_index)
 
-# Fungsi untuk memuat data dokumen dari file CSV
+
 def load_combined_data(file_path):
+    """
+    Memuat data dokumen dari CSV
+    
+    Returns:
+        dict: {doc_id: {field: value}}
+    """
     combined_data = {}
+    
     with open(file_path, 'r', encoding='utf-8') as file:
         reader = csv.DictReader(file)
         for row in reader:
@@ -39,122 +61,83 @@ def load_combined_data(file_path):
                 'url': row['URL'],
                 'content': row['Content'],
             }
+    
     return combined_data
 
-# Fungsi untuk menghitung Jaccard Similarity
-def calculate_jaccard_similarity(query_words, doc_words):
-    intersection = len(query_words & doc_words)
-    union = len(query_words | doc_words)
-    return intersection / union if union != 0 else 0
 
-# Fungsi untuk menghitung Cosine Similarity
-def calculate_cosine_similarity(query_words, doc_words):
-    # Representasi vektor
-    query_freq = Counter(query_words)
-    doc_freq = doc_words
-
-    # Dot product
-    dot_product = sum(query_freq[word] * doc_freq.get(word, 0) for word in query_freq)
-
-    # Magnitude
-    query_magnitude = math.sqrt(sum(freq**2 for freq in query_freq.values()))
-    doc_magnitude = math.sqrt(sum(freq**2 for freq in doc_freq.values()))
-
-    return dot_product / (query_magnitude * doc_magnitude) if query_magnitude and doc_magnitude else 0
-
-def calculate_bm25_similarity(query_words, model, id_map):
-    scores = model.get_scores(query_words)
-    return {id_map[i]: scores[i] for i in range(len(id_map))}
-
-# Fungsi untuk melakukan pencarian
-def search_with_algorithm(query, inverted_index, combined_data, algorithm='jaccard', target_category=None):
-    query_words = query.lower().split()
-    
-    results = []
-    for doc_id, doc_words_freq in inverted_index.items():
-        doc_data = combined_data.get(doc_id, {})
-        
-        # Filter berdasarkan kategori jika ada
-        if target_category and doc_data.get('category', '').lower() != target_category.lower():
-            continue
-        
-        if algorithm == 'jaccard':
-            doc_words = set(doc_words_freq.keys())
-            query_set = set(query_words)
-            similarity = calculate_jaccard_similarity(query_set, doc_words)
-        elif algorithm == 'cosine':
-            similarity = calculate_cosine_similarity(query_words, doc_words_freq)
-        elif algorithm == 'bm25':
-            bm25_scores = calculate_bm25_similarity(query_words, bm25_model, bm25_id_map)
-            similarity = bm25_scores.get(doc_id, 0)
-
-        if similarity > 0:
-            results.append({
-                'content_id': doc_id,
-                'title': doc_data.get('title', 'Unknown Title'),
-                'similarity': similarity,
-                'category': doc_data.get('category', 'Unknown Category'),
-                'date': doc_data.get('date', 'Unknown Date'),
-                'image_url': doc_data.get('image_url', ''),
-                'url': doc_data.get('url', ''),
-            })
-    
-    results = sorted(results, key=lambda x: x['similarity'], reverse=True)
-    return results
-
-# Muat data
+# Muat data saat aplikasi dimulai
+print("Loading inverted index...")
 inverted_index = load_inverted_index(INDEX_PATH)
+print(f"Loaded {len(inverted_index)} documents")
+
+print("Loading combined data...")
 combined_data = load_combined_data(COMBINED_DATA_PATH)
+print(f"Loaded {len(combined_data)} document details")
 
-# Build BM25 corpus
-bm25_corpus = []
-bm25_id_map = []
-
-for doc_id, freq_map in inverted_index.items():
-    tokens = []
-    for w, f in freq_map.items():
-        tokens.extend([w] * f)
-    bm25_corpus.append(tokens)
-    bm25_id_map.append(doc_id)
-
-bm25_model = BM25Okapi(bm25_corpus)
+# Inisialisasi Similarity Calculator
+print("Initializing similarity calculator...")
+similarity_calc = SimilarityCalculator(inverted_index, combined_data)
+print("Ready!")
 
 
 @app.route('/')
 def index():
+    """Halaman utama"""
     return render_template('index.html')
+
 
 @app.route('/search', methods=['GET', 'POST'])
 def search_results():
-    query = request.form.get('query') if request.method == 'POST' else request.args.get('query')
-    category = request.form.get('category') if request.method == 'POST' else request.args.get('category', None)
-    algorithm = request.form.get('algorithm', 'jaccard')
+    """
+    Halaman hasil pencarian dengan pagination
+    """
+    # Ambil parameter pencarian - support both POST and GET
+    if request.method == 'POST':
+        query = request.form.get('query')
+        category = request.form.get('category', None)
+        algorithm = request.form.get('algorithm', 'jaccard')
+    else:  # GET request (dari pagination)
+        query = request.args.get('query')
+        category = request.args.get('category', None)
+        algorithm = request.args.get('algorithm', 'jaccard')
     
-    #  Pencarian dilakukan untuk SEMUA dokumen
-    all_results = search_with_algorithm(query, inverted_index, combined_data, algorithm=algorithm, target_category=category)
+    # Validasi algorithm
+    if algorithm not in ['jaccard', 'cosine', 'bm25']:
+        algorithm = 'jaccard'
     
-    # Pagination
+    # Lakukan pencarian
+    all_results = similarity_calc.search(
+        query=query,
+        algorithm=algorithm,
+        target_category=category,
+        min_similarity=0.01  # Filter hasil dengan similarity minimal 1%
+    )
+    
+    # Pagination setup
     results_per_page = 10
     page = request.args.get('page', 1, type=int)
     total_results = len(all_results)
-    total_pages = (total_results // results_per_page) + (1 if total_results % results_per_page > 0 else 0)
+    total_pages = (total_results + results_per_page - 1) // results_per_page  # Ceiling division
     
-    # Pastikan page tidak melebihi total_pages
-    if page > total_pages and total_pages > 0:
+    # Validasi halaman
+    if page < 1:
+        page = 1
+    elif page > total_pages and total_pages > 0:
         page = total_pages
     
+    # Ambil hasil untuk halaman saat ini
     start = (page - 1) * results_per_page
     end = start + results_per_page
     paginated_results = all_results[start:end]
     
-    # Page range untuk pagination (maksimal 5 angka)
+    # Generate page range untuk pagination (maksimal 5 angka)
     page_range = range(max(1, page - 2), min(total_pages, page + 2) + 1)
-
+    
     return render_template(
         'result.html',
         query=query,
         results=paginated_results,
-        total_results=total_results,  # TAMBAHAN: Total hasil
+        total_results=total_results,
         total_pages=total_pages,
         current_page=page,
         page_range=page_range,
@@ -162,12 +145,35 @@ def search_results():
         algorithm=algorithm
     )
 
+
 @app.route('/content/<int:content_id>')
 def content(content_id):
+    """
+    Halaman detail konten
+    """
     doc = combined_data.get(content_id, {})
+    
     if not doc:
-        return "Content not found", 404
-    return render_template('content.html', content=doc, query=request.args.get('query', ''))
+        return render_template('404.html'), 404
+    
+    return render_template(
+        'content.html',
+        content=doc,
+        query=request.args.get('query', '')
+    )
+
+
+@app.errorhandler(404)
+def page_not_found(e):
+    """Handler untuk halaman tidak ditemukan"""
+    return render_template('404.html'), 404
+
+
+@app.errorhandler(500)
+def internal_server_error(e):
+    """Handler untuk internal server error"""
+    return render_template('500.html'), 500
+
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
