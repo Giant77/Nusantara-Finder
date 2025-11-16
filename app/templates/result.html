@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Hasil pencarian destinasi wisata - NUSANTARA FINDER">
+    <title>Hasil Pencarian: {{ query }} - NUSANTARA FINDER</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Home Button -->
+    <a href="/" class="home-button" aria-label="Kembali ke beranda">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <div class="container">
+        <!-- Header with Background -->
+        <header id="header">
+            <div class="header-background"></div>
+            
+            <div class="logo-container">
+                <img src="https://pbs.twimg.com/media/GdOkZPYasAAkyxI?format=png&name=small" 
+                     alt="Triply Logo" 
+                     class="logo-image">
+                <h1 class="brand-title">NUSANTARA FINDER</h1>
+            </div>
+            
+            <p class="brand-subtitle">
+                Hasil pencarian untuk: <strong>"{{ query }}"</strong>
+            </p>
+            <p class="brand-subtitle" style="margin-top: 0.5rem; font-size: 0.95rem;">
+                Menggunakan algoritma: <strong>{{ algorithm|capitalize }} Similarity</strong>
+            </p>
+        </header>
+
+        <!-- Search Box -->
+        <section class="search-box">
+            <form action="{{ url_for('search_results') }}" method="POST">
+                <input type="text" 
+                       name="query" 
+                       placeholder="Cari aktivitas atau destinasi wisata..." 
+                       value="{{ query }}"
+                       required
+                       autocomplete="off">
+                
+                <select name="algorithm" aria-label="Pilih algoritma pencarian">
+                    <option value="jaccard" {% if algorithm=='jaccard' %}selected{% endif %}>
+                        Jaccard Similarity
+                    </option>
+                    <option value="cosine" {% if algorithm=='cosine' %}selected{% endif %}>
+                        Cosine Similarity
+                    </option>
+                </select>
+                
+                <button type="submit">
+                    <i class="fas fa-search"></i> Cari
+                </button>
+            </form>
+        </section>
+
+     <!-- Results Info -->
+        {% if results %}
+        <div style="background: rgba(255, 255, 255, 0.9); padding: 1.5rem; border-radius: 16px; margin: 2rem 0; text-align: center;">
+            <p style="color: #1f2937; font-size: 1.1rem; margin: 0;">
+                <i class="fas fa-info-circle" style="color: #2563eb;"></i>
+                Ditemukan <strong>{{ total_results }}</strong> hasil yang relevan
+                {% if total_pages > 1 %}
+                (Halaman {{ current_page }} dari {{ total_pages }})
+                {% endif %}
+            </p>
+        </div>
+        {% endif %}
+
+        <!-- Results Grid -->
+        <section class="results-container">
+            {% if results %}
+            <div class="results-grid">
+                {% for result in results %}
+                <article class="result-item fade-in">
+                    <div class="result-image">
+                        <img src="{{ result['image_url'] }}" 
+                             alt="{{ result['title'] }}"
+                             loading="lazy"
+                             onerror="this.src='https://via.placeholder.com/500x250?text=No+Image'">
+                    </div>
+                    
+                    <div class="result-info">
+                        <h2>
+                            <a href="{{ url_for('content', content_id=result['content_id']) }}">
+                                {{ result['title'] }}
+                            </a>
+                        </h2>
+                        
+                        <p>
+                            <i class="far fa-calendar-alt"></i>
+                            <strong>Tanggal:</strong> {{ result['date'] }}
+                        </p>
+                        
+                        <p>
+                            <i class="fas fa-tag"></i>
+                            <strong>Kategori:</strong> {{ result['category'] }}
+                        </p>
+                        
+                        <div class="similarity-badge">
+                            <i class="fas fa-chart-line"></i>
+                            Similarity: {{ (result['similarity'] * 100)|round(2) }}%
+                        </div>
+                    </div>
+                </article>
+                {% endfor %}
+            </div>
+            {% else %}
+            <!-- No Results Found -->
+            <div style="background: rgba(255, 255, 255, 0.9); padding: 4rem 2rem; border-radius: 20px; text-align: center; margin: 3rem 0;">
+                <i class="fas fa-search" style="font-size: 4rem; color: #9ca3af; margin-bottom: 1rem;"></i>
+                <h2 style="color: #1f2937; margin-bottom: 1rem;">Tidak Ada Hasil Ditemukan</h2>
+                <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 2rem;">
+                    Maaf, pencarian untuk "<strong>{{ query }}</strong>" tidak menemukan hasil.
+                </p>
+                <a href="/" style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;">
+                    <i class="fas fa-home"></i> Kembali ke Beranda
+                </a>
+            </div>
+            {% endif %}
+        </section>
+
+       <!-- Pagination -->
+        {% if results and total_pages > 1 %}
+        <section class="pagination-container">
+            <div class="pagination">
+                {% if current_page > 1 %}
+                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=current_page - 1) }}" 
+                   class="prev">
+                    <i class="fas fa-chevron-left"></i> Sebelumnya
+                </a>
+                {% endif %}
+
+                {% for page_num in page_range %}
+                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=page_num) }}"
+                   class="{{ 'active' if page_num == current_page else '' }}">
+                    {{ page_num }}
+                </a>
+                {% endfor %}
+
+                {% if current_page < total_pages %}
+                <a href="{{ url_for('search_results', query=query, algorithm=algorithm, page=current_page + 1) }}" 
+                   class="next">
+                    Selanjutnya <i class="fas fa-chevron-right"></i>
+                </a>
+                {% endif %}
+            </div>
+        </section>
+        {% endif %}
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Background Image Slideshow
+     const images = [
+            'https://img.global.news.samsung.com/id/wp-content/uploads/2023/04/18092118/Adaptive-Pixel-200MP-membuat-hasil-foto-pemandangan-menjadi-epic.jpeg',
+            'https://aceh.bpk.go.id/wp-content/uploads/2024/10/Masjid-raya-baiturrahman-banda-aceh-destinasi-wisata-religi-yang-patut-anda-kunjungi.jpg',
+            'https://c.pxhere.com/photos/22/55/krka_waterfall_croatia_nature_park_river_travel_water-848921.jpg!d',
+            'https://c.pxhere.com/photos/4f/32/ancient_archaeology_architecture_culture_daylight_famous_hinduism_historic-1048044.jpg!d',
+            'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMqQAowAjWnTMlp75GWQ_7v-kfrJpDq5yySid0SvuA-2ntP3sgraba2YAz19EtWKlybzI1goY0AU5mIgSRO7Swtun8TRFWZgkO4wbLKCAvA-6-w4McydZ-JCbxXjEQ0amubfsg2kMCkfhV/s0/gunung-bromo.jpg'
+        ];
+
+        let currentIndex = 0;
+        const headerBg = document.querySelector('.header-background');
+
+        function changeBackground() {
+            headerBg.style.backgroundImage = `url(${images[currentIndex]})`;
+            currentIndex = (currentIndex + 1) % images.length;
+        }
+
+        changeBackground();
+        setInterval(changeBackground, 5000);
+
+        // Add fade-in animation with delay
+        window.addEventListener('load', function() {
+            const items = document.querySelectorAll('.fade-in');
+            items.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+            });
+        });
+
+        // Search input focus animation
+        const searchInput = document.querySelector('input[name="query"]');
+        searchInput.addEventListener('focus', function() {
+            this.parentElement.style.transform = 'scale(1.02)';
+        });
+        
+        searchInput.addEventListener('blur', function() {
+            this.parentElement.style.transform = 'scale(1)';
+        });
+
+        // Smooth scroll to results
+        if (window.location.search.includes('page=')) {
+            setTimeout(() => {
+                document.querySelector('.results-container')?.scrollIntoView({ 
+                    behavior: 'smooth', 
+                    block: 'start' 
+                });
+            }, 300);
+        }
+    </script>
+</body>
+</html>

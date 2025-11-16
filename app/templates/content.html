@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="{{ content['title'] }} - NUSANTARA FINDER">
+    <title>{{ content['title'] }} - NUSANTARA FINDER</title>
+    
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700;900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Home Button -->
+    <a href="/" class="home-button" aria-label="Kembali ke beranda">
+        <i class="fas fa-home"></i>
+    </a>
+
+    <!-- Back Button -->
+    <a onclick="history.back()" 
+       class="home-button" 
+       style="right: 6rem; cursor: pointer;" 
+       aria-label="Kembali ke hasil pencarian">
+        <i class="fas fa-arrow-left"></i>
+    </a>
+
+    <div class="container">
+        <!-- Header with Background -->
+        <header id="header" style="margin-bottom: 2rem;">
+            <div class="header-background"></div>
+            
+            <div class="logo-container">
+                <img src="https://pbs.twimg.com/media/GdOkZPYasAAkyxI?format=png&name=small" 
+                     alt="Triply Logo" 
+                     class="logo-image">
+                <h1 class="brand-title">NUSANTARA FINDER</h1>
+            </div>
+            
+            <p class="brand-subtitle">
+                Detail Destinasi Wisata
+            </p>
+        </header>
+
+        <!-- Content Article -->
+        <article class="content-page fade-in">
+            <!-- Article Header -->
+            <header>
+                <h1>{{ content['title'] }}</h1>
+                
+                <div class="content-meta">
+                    <p style="display: flex; align-items: center; gap: 1.5rem; flex-wrap: wrap;">
+                        <span>
+                            <i class="far fa-calendar-alt" style="color: #2563eb;"></i>
+                            <strong>Tanggal:</strong> {{ content['date'] }}
+                        </span>
+                        
+                        {% if content.get('category') %}
+                        <span>
+                            <i class="fas fa-tag" style="color: #10b981;"></i>
+                            <strong>Kategori:</strong> {{ content['category'] }}
+                        </span>
+                        {% endif %}
+                    </p>
+                </div>
+            </header>
+
+            <!-- Featured Image (if available) -->
+            {% if content.get('image_url') %}
+            <div style="margin: 2rem 0; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 30px rgba(0,0,0,0.2);">
+                <img src="{{ content['image_url'] }}" 
+                     alt="{{ content['title'] }}"
+                     style="width: 100%; height: auto; display: block;"
+                     onerror="this.style.display='none'">
+            </div>
+            {% endif %}
+
+            <!-- Article Content -->
+            <section class="content-body">
+                <p>{{ content['content'] }}</p>
+            </section>
+
+            <!-- Action Buttons -->
+            <div style="display: flex; gap: 1rem; margin-top: 3rem; flex-wrap: wrap;">
+                <a href="{{ content['url'] }}" 
+                   target="_blank" 
+                   class="read-more"
+                   rel="noopener noreferrer">
+                    <i class="fas fa-external-link-alt"></i>
+                    Baca Selengkapnya
+                </a>
+                
+                <button onclick="history.back()" 
+                        class="read-more" 
+                        style="background: linear-gradient(135deg, #6b7280, #4b5563); cursor: pointer; border: none;">
+                    <i class="fas fa-arrow-left"></i>
+                    Kembali ke Hasil
+                </button>
+            </div>
+
+            <!-- Share Section -->
+            <div style="margin-top: 3rem; padding-top: 2rem; border-top: 2px solid #e5e7eb;">
+                <h3 style="color: #1f2937; margin-bottom: 1rem;">
+                    <i class="fas fa-share-alt" style="color: #2563eb;"></i>
+                    Bagikan Destinasi Ini
+                </h3>
+                
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <a href="https://www.facebook.com/sharer/sharer.php?u={{ content['url'] }}" 
+                       target="_blank"
+                       style="padding: 0.75rem 1.5rem; background: #1877f2; color: white; text-decoration: none; border-radius: 25px; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'"
+                       onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    
+                    <a href="https://twitter.com/intent/tweet?url={{ content['url'] }}&text={{ content['title'] }}" 
+                       target="_blank"
+                       style="padding: 0.75rem 1.5rem; background: #1da1f2; color: white; text-decoration: none; border-radius: 25px; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'"
+                       onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fab fa-twitter"></i> Twitter
+                    </a>
+                    
+                    <a href="https://wa.me/?text={{ content['title'] }}%20{{ content['url'] }}" 
+                       target="_blank"
+                       style="padding: 0.75rem 1.5rem; background: #25d366; color: white; text-decoration: none; border-radius: 25px; display: inline-flex; align-items: center; gap: 0.5rem; transition: all 0.3s;"
+                       onmouseover="this.style.transform='translateY(-2px)'"
+                       onmouseout="this.style.transform='translateY(0)'">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </a>
+                </div>
+            </div>
+        </article>
+
+        <!-- Related/Suggested Section (Optional) -->
+        <section style="margin: 3rem 0;">
+            <div style="background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 16px; text-align: center;">
+                <h2 style="color: #1f2937; margin-bottom: 1rem;">
+                    <i class="fas fa-compass" style="color: #2563eb;"></i>
+                    Jelajahi Destinasi Lainnya
+                </h2>
+                <p style="color: #6b7280; margin-bottom: 2rem;">
+                    Temukan lebih banyak tempat menarik di Indonesia
+                </p>
+                <a href="/" 
+                   style="display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, #2563eb, #1e40af); color: white; text-decoration: none; border-radius: 25px; font-weight: 600; transition: all 0.3s;"
+                   onmouseover="this.style.transform='translateY(-2px)'"
+                   onmouseout="this.style.transform='translateY(0)'">
+                    <i class="fas fa-search"></i> Mulai Pencarian Baru
+                </a>
+            </div>
+        </section>
+    </div>
+
+    <!-- JavaScript -->
+    <script>
+        // Background Image Slideshow
+       const images = [
+            'https://img.global.news.samsung.com/id/wp-content/uploads/2023/04/18092118/Adaptive-Pixel-200MP-membuat-hasil-foto-pemandangan-menjadi-epic.jpeg',
+            'https://aceh.bpk.go.id/wp-content/uploads/2024/10/Masjid-raya-baiturrahman-banda-aceh-destinasi-wisata-religi-yang-patut-anda-kunjungi.jpg',
+            'https://c.pxhere.com/photos/22/55/krka_waterfall_croatia_nature_park_river_travel_water-848921.jpg!d',
+            'https://c.pxhere.com/photos/4f/32/ancient_archaeology_architecture_culture_daylight_famous_hinduism_historic-1048044.jpg!d',
+            'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMqQAowAjWnTMlp75GWQ_7v-kfrJpDq5yySid0SvuA-2ntP3sgraba2YAz19EtWKlybzI1goY0AU5mIgSRO7Swtun8TRFWZgkO4wbLKCAvA-6-w4McydZ-JCbxXjEQ0amubfsg2kMCkfhV/s0/gunung-bromo.jpg'
+        ];
+
+        let currentIndex = 0;
+        const headerBg = document.querySelector('.header-background');
+
+        function changeBackground() {
+            headerBg.style.backgroundImage = `url(${images[currentIndex]})`;
+            currentIndex = (currentIndex + 1) % images.length;
+        }
+
+        changeBackground();
+        setInterval(changeBackground, 5000);
+
+        // Add fade-in animation on load
+        window.addEventListener('load', function() {
+            const article = document.querySelector('.content-page');
+            if (article) {
+                article.classList.add('fade-in');
+            }
+        });
+
+        // Smooth scroll to top button
+        window.addEventListener('scroll', function() {
+            const scrollButton = document.querySelector('.scroll-to-top');
+            if (window.pageYOffset > 300) {
+                if (scrollButton) scrollButton.style.display = 'flex';
+            } else {
+                if (scrollButton) scrollButton.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
