@@ -3,7 +3,10 @@ import re
 
 # List folder input dan folder output
 folders = {
-    "domestic-destination": ("domestic-destination/content", "domestic-destination/cleaned_content")
+    "domestic-destination": (
+        "domestic-destination/content", 
+        "domestic-destination/cleaned_content"
+        )
 }
 
 # Loop melalui setiap kategori folder
