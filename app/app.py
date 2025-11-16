@@ -3,9 +3,7 @@ import csv
 import os
 from collections import defaultdict
 import re
-
-# Import modul similarity calculator
-from similarity_calculator import SimilarityCalculator
+from app.similarity_calculator import SimilarityCalculator
 
 app = Flask(__name__)
 
