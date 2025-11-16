@@ -54,6 +54,10 @@
                     <option value="cosine" {% if algorithm=='cosine' %}selected{% endif %}>
                         Cosine Similarity
                     </option>
+                    <option value="bm25" {% if algorithm=='bm25' %}selected{% endif %}>
+                        BM25 Similarity
+                    </option>
+                    
                 </select>
                 
                 <button type="submit">

@@ -22,8 +22,8 @@ This project is a search engine designed to help users explore Indonesian's trav
 
 Before you can run this project, you will need to install the following:
 
-1. **Python** (Version 3.6 or above)
-2. **Flask**: Install Flask by running the command:
+1. **Python** (Version 3.10 or later)
+2. **Flask**: Install required libraries by running the command:
    ```bash
    pip install -r requirements.txt
    ```
@@ -34,7 +34,7 @@ Before you can run this project, you will need to install the following:
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/Giant77/Nusantara-Finder.git
+   git clone https://github.com/marqynew/nusantara-finder1.git
    ```
 
 2. Navigate to the project directory:
