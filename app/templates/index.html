@@ -1,159 +1,227 @@
 <!DOCTYPE html>
 <html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Temukan destinasi wisata terbaik di Indonesia - NUSANTARA FINDER">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="description"
+      content="Temukan destinasi wisata terbaik di Indonesia - NUSANTARA FINDER"
+    />
     <title>NUSANTARA FINDER - Destinasi Wisata Indonesia</title>
-    
+
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700;900&display=swap" rel="stylesheet">
-    
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Muli:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+
     <!-- Preconnect for performance -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-</head>
-<body>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  </head>
+  <body>
     <div class="container">
-        <!-- Header Section with Background Slideshow -->
-        <header id="header">
-            <div class="header-background"></div>
-            
-            <!-- Logo & Brand -->
-            <div class="logo-container">
-                <img src="https://pbs.twimg.com/media/GdOkZPYasAAkyxI?format=png&name=small" 
-                     alt="Triply Logo" 
-                     class="logo-image">
-                <h1 class="brand-title">NUSANTARA FINDER</h1>
-            </div>
-            
-            <p class="brand-subtitle">
-                Temukan destinasi wisata favorit Anda di Kepulauan Indonesia
-            </p>
-            
-            <!-- Animated Headlines -->
-            <div class="animated-headings-container">
-                <div class="animated-headings">
-                    <span>
-                        Destinasi Wisata<br><br>
-                        Tempat Bersejarah<br>
-                        Event Kebudayaan<br><br>
-                        Kuliner Nusantara
-                    </span>
-                </div>
-            </div>
-        </header>
+      <!-- Header Section with Background Slideshow -->
+      <header id="header">
+        <div class="header-background"></div>
 
-        <!-- Search Box -->
-        <section class="search-box">
-            <form action="{{ url_for('search_results') }}" method="POST">
-                <input type="text" 
-                       name="query" 
-                       placeholder="Cari aktivitas atau destinasi wisata..." 
-                       required
-                       autocomplete="off">
-                
-                <select name="algorithm" aria-label="Pilih algoritma pencarian">
-                    <option value="jaccard">Jaccard Similarity</option>
-                    <option value="cosine">Cosine Similarity</option>
-                </select>
-                
-                <button type="submit">
-                    <i class="fas fa-search"></i> Cari
-                </button>
-            </form>
-        </section>
+        <!-- Logo & Brand -->
+        <div class="logo-container">
+          <img
+            src="https://pbs.twimg.com/media/GdOkZPYasAAkyxI?format=png&name=small"
+            alt="Triply Logo"
+            class="logo-image"
+          />
+          <h1 class="brand-title">NUSANTARA FINDER</h1>
+        </div>
 
-        <!-- Hero Section -->
-        <section class="hero-section fade-in">
-            <div class="hero-content">
-                <h1>Jelajahi Wisata Terpopuler Indonesia</h1>
-                <p>
-                    Dari Sabang sampai Merauke, temukan keindahan alam, 
-                    kekayaan budaya, dan destinasi menakjubkan di seluruh 
-                    Kepulauan Indonesia.
-                </p>
-            </div>
-            
-            <div class="hero-image">
-                <img src="https://pbs.twimg.com/media/GdOMXVbbYAAx63M?format=png&name=small" 
-                     alt="Indonesian Tourism" 
-                     loading="lazy">
-            </div>
-        </section>
+        <p class="brand-subtitle">
+          Temukan destinasi wisata favorit Anda di Kepulauan Indonesia
+        </p>
 
-        <!-- Features Section -->
-        <section class="features-section" style="margin: 3rem 0;">
-            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 2rem;">
-                
-                <div style="background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <i class="fas fa-mountain" style="font-size: 3rem; color: #2563eb; margin-bottom: 1rem;"></i>
-                    <h3 style="color: #1f2937; margin-bottom: 0.5rem;">Destinasi Alam</h3>
-                    <p style="color: #6b7280;">Jelajahi keindahan alam Indonesia</p>
-                </div>
-                
-                <div style="background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <i class="fas fa-landmark" style="font-size: 3rem; color: #10b981; margin-bottom: 1rem;"></i>
-                    <h3 style="color: #1f2937; margin-bottom: 0.5rem;">Tempat Bersejarah</h3>
-                    <p style="color: #6b7280;">Telusuri jejak sejarah bangsa</p>
-                </div>
-                
-                <div style="background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <i class="fas fa-calendar-alt" style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem;"></i>
-                    <h3 style="color: #1f2937; margin-bottom: 0.5rem;">Event Budaya</h3>
-                    <p style="color: #6b7280;">Saksikan festival dan tradisi</p>
-                </div>
-                
-                <div style="background: rgba(255, 255, 255, 0.9); padding: 2rem; border-radius: 16px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
-                    <i class="fas fa-utensils" style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem;"></i>
-                    <h3 style="color: #1f2937; margin-bottom: 0.5rem;">Kuliner Lokal</h3>
-                    <p style="color: #6b7280;">Nikmati cita rasa nusantara</p>
-                </div>
-                
-            </div>
-        </section>
+        <!-- Animated Headlines -->
+        <div class="animated-headings-container">
+          <div class="animated-headings">
+            <span>
+              Destinasi Wisata<br /><br />
+              Tempat Bersejarah<br />
+              Event Kebudayaan<br /><br />
+              Kuliner Nusantara
+            </span>
+          </div>
+        </div>
+      </header>
+
+      <!-- Search Box -->
+      <section class="search-box">
+        <form action="{{ url_for('search_results') }}" method="POST">
+          <input
+            type="text"
+            name="query"
+            placeholder="Cari aktivitas atau destinasi wisata..."
+            required
+            autocomplete="off"
+          />
+
+          <select name="algorithm" aria-label="Pilih algoritma pencarian">
+            <option value="jaccard">Jaccard Similarity</option>
+            <option value="cosine">Cosine Similarity</option>
+            <option value="bm25">BM25 Similarity</option>
+          </select>
+
+          <button type="submit"><i class="fas fa-search"></i> Cari</button>
+        </form>
+      </section>
+
+      <!-- Hero Section -->
+      <section class="hero-section fade-in">
+        <div class="hero-content">
+          <h1>Jelajahi Wisata Terpopuler Indonesia</h1>
+          <p>
+            Dari Sabang sampai Merauke, temukan keindahan alam, kekayaan budaya,
+            dan destinasi menakjubkan di seluruh Kepulauan Indonesia.
+          </p>
+        </div>
+
+        <div class="hero-image">
+          <img
+            src="https://pbs.twimg.com/media/GdOMXVbbYAAx63M?format=png&name=small"
+            alt="Indonesian Tourism"
+            loading="lazy"
+          />
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section class="features-section" style="margin: 3rem 0">
+        <div
+          style="
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+          "
+        >
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.9);
+              padding: 2rem;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <i
+              class="fas fa-mountain"
+              style="font-size: 3rem; color: #2563eb; margin-bottom: 1rem"
+            ></i>
+            <h3 style="color: #1f2937; margin-bottom: 0.5rem">
+              Destinasi Alam
+            </h3>
+            <p style="color: #6b7280">Jelajahi keindahan alam Indonesia</p>
+          </div>
+
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.9);
+              padding: 2rem;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <i
+              class="fas fa-landmark"
+              style="font-size: 3rem; color: #10b981; margin-bottom: 1rem"
+            ></i>
+            <h3 style="color: #1f2937; margin-bottom: 0.5rem">
+              Tempat Bersejarah
+            </h3>
+            <p style="color: #6b7280">Telusuri jejak sejarah bangsa</p>
+          </div>
+
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.9);
+              padding: 2rem;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <i
+              class="fas fa-calendar-alt"
+              style="font-size: 3rem; color: #f59e0b; margin-bottom: 1rem"
+            ></i>
+            <h3 style="color: #1f2937; margin-bottom: 0.5rem">Event Budaya</h3>
+            <p style="color: #6b7280">Saksikan festival dan tradisi</p>
+          </div>
+
+          <div
+            style="
+              background: rgba(255, 255, 255, 0.9);
+              padding: 2rem;
+              border-radius: 16px;
+              text-align: center;
+              box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            "
+          >
+            <i
+              class="fas fa-utensils"
+              style="font-size: 3rem; color: #ef4444; margin-bottom: 1rem"
+            ></i>
+            <h3 style="color: #1f2937; margin-bottom: 0.5rem">Kuliner Lokal</h3>
+            <p style="color: #6b7280">Nikmati cita rasa nusantara</p>
+          </div>
+        </div>
+      </section>
     </div>
 
     <!-- JavaScript -->
     <script>
-        // Background Image Slideshow
-        const images = [
-            'https://img.global.news.samsung.com/id/wp-content/uploads/2023/04/18092118/Adaptive-Pixel-200MP-membuat-hasil-foto-pemandangan-menjadi-epic.jpeg',
-            'https://aceh.bpk.go.id/wp-content/uploads/2024/10/Masjid-raya-baiturrahman-banda-aceh-destinasi-wisata-religi-yang-patut-anda-kunjungi.jpg',
-            'https://c.pxhere.com/photos/22/55/krka_waterfall_croatia_nature_park_river_travel_water-848921.jpg!d',
-            'https://c.pxhere.com/photos/4f/32/ancient_archaeology_architecture_culture_daylight_famous_hinduism_historic-1048044.jpg!d',
-            'https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMqQAowAjWnTMlp75GWQ_7v-kfrJpDq5yySid0SvuA-2ntP3sgraba2YAz19EtWKlybzI1goY0AU5mIgSRO7Swtun8TRFWZgkO4wbLKCAvA-6-w4McydZ-JCbxXjEQ0amubfsg2kMCkfhV/s0/gunung-bromo.jpg'
-        ];
+      // Background Image Slideshow
+      const images = [
+        "https://img.global.news.samsung.com/id/wp-content/uploads/2023/04/18092118/Adaptive-Pixel-200MP-membuat-hasil-foto-pemandangan-menjadi-epic.jpeg",
+        "https://aceh.bpk.go.id/wp-content/uploads/2024/10/Masjid-raya-baiturrahman-banda-aceh-destinasi-wisata-religi-yang-patut-anda-kunjungi.jpg",
+        "https://c.pxhere.com/photos/22/55/krka_waterfall_croatia_nature_park_river_travel_water-848921.jpg!d",
+        "https://c.pxhere.com/photos/4f/32/ancient_archaeology_architecture_culture_daylight_famous_hinduism_historic-1048044.jpg!d",
+        "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiMqQAowAjWnTMlp75GWQ_7v-kfrJpDq5yySid0SvuA-2ntP3sgraba2YAz19EtWKlybzI1goY0AU5mIgSRO7Swtun8TRFWZgkO4wbLKCAvA-6-w4McydZ-JCbxXjEQ0amubfsg2kMCkfhV/s0/gunung-bromo.jpg",
+      ];
 
-        let currentIndex = 0;
-        const headerBg = document.querySelector('.header-background');
+      let currentIndex = 0;
+      const headerBg = document.querySelector(".header-background");
 
-        function changeBackground() {
-            headerBg.style.backgroundImage = `url(${images[currentIndex]})`;
-            currentIndex = (currentIndex + 1) % images.length;
-        }
+      function changeBackground() {
+        headerBg.style.backgroundImage = `url(${images[currentIndex]})`;
+        currentIndex = (currentIndex + 1) % images.length;
+      }
 
-        changeBackground();
-        setInterval(changeBackground, 5000);
+      changeBackground();
+      setInterval(changeBackground, 5000);
 
-        // Search input animation
-        const searchInput = document.querySelector('input[name="query"]');
-        searchInput.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'scale(1.02)';
+      // Search input animation
+      const searchInput = document.querySelector('input[name="query"]');
+      searchInput.addEventListener("focus", function () {
+        this.parentElement.style.transform = "scale(1.02)";
+      });
+
+      searchInput.addEventListener("blur", function () {
+        this.parentElement.style.transform = "scale(1)";
+      });
+
+      // Add fade-in animation on load
+      window.addEventListener("load", function () {
+        document.querySelectorAll(".fade-in").forEach((el, index) => {
+          el.style.animationDelay = `${index * 0.1}s`;
         });
-        
-        searchInput.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'scale(1)';
-        });
-
-        // Add fade-in animation on load
-        window.addEventListener('load', function() {
-            document.querySelectorAll('.fade-in').forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.1}s`;
-            });
-        });
+      });
     </script>
-</body>
+  </body>
 </html>

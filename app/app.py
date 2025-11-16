@@ -4,6 +4,7 @@ import csv
 import math
 import os
 from collections import Counter, defaultdict
+from rank_bm25 import BM25Okapi
 
 app = Flask(__name__)
 
@@ -61,6 +62,10 @@ def calculate_cosine_similarity(query_words, doc_words):
 
     return dot_product / (query_magnitude * doc_magnitude) if query_magnitude and doc_magnitude else 0
 
+def calculate_bm25_similarity(query_words, model, id_map):
+    scores = model.get_scores(query_words)
+    return {id_map[i]: scores[i] for i in range(len(id_map))}
+
 # Fungsi untuk melakukan pencarian
 def search_with_algorithm(query, inverted_index, combined_data, algorithm='jaccard', target_category=None):
     query_words = query.lower().split()
@@ -79,6 +84,9 @@ def search_with_algorithm(query, inverted_index, combined_data, algorithm='jacca
             similarity = calculate_jaccard_similarity(query_set, doc_words)
         elif algorithm == 'cosine':
             similarity = calculate_cosine_similarity(query_words, doc_words_freq)
+        elif algorithm == 'bm25':
+            bm25_scores = calculate_bm25_similarity(query_words, bm25_model, bm25_id_map)
+            similarity = bm25_scores.get(doc_id, 0)
 
         if similarity > 0:
             results.append({
@@ -97,6 +105,20 @@ def search_with_algorithm(query, inverted_index, combined_data, algorithm='jacca
 # Muat data
 inverted_index = load_inverted_index(INDEX_PATH)
 combined_data = load_combined_data(COMBINED_DATA_PATH)
+
+# Build BM25 corpus
+bm25_corpus = []
+bm25_id_map = []
+
+for doc_id, freq_map in inverted_index.items():
+    tokens = []
+    for w, f in freq_map.items():
+        tokens.extend([w] * f)
+    bm25_corpus.append(tokens)
+    bm25_id_map.append(doc_id)
+
+bm25_model = BM25Okapi(bm25_corpus)
+
 
 @app.route('/')
 def index():
