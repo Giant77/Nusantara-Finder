@@ -56,16 +56,18 @@ custom_stopwords = {
 def preprocess_text(text):
     # 1. Case folding (huruf kecil semua)
     text = text.lower()
-    # 1. Remove punctuations dan angka
+    # 2. Remove punctuations dan angka
     text = re.sub(r'\d+', '', text)  # Hapus angka
     text = re.sub(r'[^\w\s]', '', text)  # Hapus tanda baca
     
     # 2. Hapus stopwords
     tokens = text.split()
-    filtered_tokens = [token for token in tokens if token not in custom_stopwords]
+    filtered_tokens = [token for token in tokens 
+                       if token not in custom_stopwords]
     
     # 3. Lemmatization
-    lemmatized_tokens = [lemmatizer.lemmatize(token) for token in filtered_tokens]
+    lemmatized_tokens = [lemmatizer.lemmatize(token)
+                          for token in filtered_tokens]
     
     # 4. Return token hasil
     return lemmatized_tokens

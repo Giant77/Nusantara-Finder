@@ -1,10 +1,12 @@
 import os
 from collections import Counter
 
-# Fungsi untuk membangun Inverted Index dari file yang sudah diproses
+# Fungsi untuk membangun Inverted Index dari 
+# file yang sudah diproses
 def build_inverted_index_from_processed_file(file_path, doc_id):
     with open(file_path, 'r', encoding='utf-8') as file:
-        tokens = file.read().splitlines()  # Membaca file dan memisahkan setiap token per baris
+        tokens = file.read().splitlines()  
+        # Membaca file dan memisahkan setiap token per baris
     
     # Menghitung frekuensi term dalam dokumen
     term_frequency = Counter(tokens)

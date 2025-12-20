@@ -34,7 +34,7 @@ Before you can run this project, you will need to install the following:
 1. Clone the repository to your local machine:
 
    ```bash
-   git clone https://github.com/marqynew/nusantara-finder1.git
+   git clone https://github.com/Giant77/Nusantara-Finder.git
    ```
 
 2. Navigate to the project directory:
